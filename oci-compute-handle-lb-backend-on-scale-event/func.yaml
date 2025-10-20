@@ -1,0 +1,19 @@
+schema_version: 20180708
+name: oci-compute-handle-lb-backend-on-scale-event
+version: 0.0.87
+runtime: python
+build_image: fnproject/python:3.11-dev
+run_image: fnproject/python:3.11
+entrypoint: /python/bin/fdk /function/func.py handler
+memory: 128
+timeout: 300
+config:
+  BACKEND_SET_NAME: test-lb-bs...
+  HEALTH_CHECK_INTERVAL_MS: "10000"
+  HEALTH_CHECK_MAX_RETRIES: "100"
+  HEALTH_CHECK_PORT: "80"
+  HEALTH_CHECK_PROTOCOL: HTTP
+  HEALTH_CHECK_STATUS_CODE: "200"
+  HEALTH_CHECK_TIMEOUT_MS: "3000"
+  HEALTH_CHECK_URL_PATH: /
+  LOAD_BALANCER_ID: ocid1.loadbalancer.oc1.ap-chuncheon-1.aaaaa...
