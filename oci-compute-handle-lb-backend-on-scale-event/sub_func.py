@@ -425,7 +425,7 @@ def _create_backends(resources):
 
             try:
                 logger.info(f"{private_ip} health check ({count}/{HEALTH_CHECK_MAX_RETRIES}) - {url}")
-                response = requests.get(url, timeout=HEALTH_CHECK_TIMEOUT)
+                response = requests.get(url, timeout=HEALTH_CHECK_TIMEOUT, allow_redirects=False)
             
                 if response.status_code == HEALTH_CHECK_STATUS_CODE:
                     logger.info(f"{private_ip} [OK] {url} {response.status_code}")
