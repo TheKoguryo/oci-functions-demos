@@ -82,7 +82,7 @@ OCI Notification Topic에 전달된 메시지를 OCI Function을 통해 Telegram
 
 3. application을 생성합니다.
 
-    - Name: 'oci-hol-fn-app`
+    - Name: `oci-hol-fn-app`
     - VCN, Subnet 지정
     - Shape: `GENERIC_X86`
 
@@ -106,7 +106,6 @@ application의 상세페이지 Getting started에 있는 Cloud shell setup 또�
     ```
 
 2. `func.yaml`의 config에서 `BOT_TOKEN`, `CHAT_ID`을 사용할 Telegram의 정보로 업데이트 합니다.
-Backend Heath Check 정보도 기본 값과 다른 경우 변경합니다.
 
     ```
     schema_version: 20180708
@@ -137,8 +136,19 @@ Backend Heath Check 정보도 기본 값과 다른 경우 변경합니다.
 
     - Name: 예, demo-notification-topic
 
+5. 만든 Topic을 클릭하고 Subsriptions 탭으로 이동합니다.
 
-## OCI Events 서비스 Rule 설정 (예시)
+6. Create subscription을 클릭합니다.
+
+7. Protocol을 Function으로 변경하고, 대상 function을 지정하여 구독을 생성합니다.
+
+    - Oracle Functions application: `oci-hol-fn-app`
+    - Function: `oci-notification-telegram-forwarder`
+
+8. 이제 Topic에 메시지가 들어오면, 지정한 Function으로 호출 및 전달됩니다.
+
+
+## OCI Events 서비스 Rule 설정
 
 OCI Events에서 OCI Function을 직접 호출할 수 있지만, 요건에 따라 Notification Topic을 거치게 구성하였습니다.
 
@@ -152,17 +162,17 @@ OCI Events에서 OCI Function을 직접 호출할 수 있지만, 요건에 따�
 
     - Display Name: 예, instance-event-rule
 
-5. 이벤트가 트리거되는 조건(Rule Conditions)을 지정합니다
+5. 이벤트가 트리거되는 조건(Rule Conditions)을 지정합니다. (예시)
 
     | Condition  | Event Type | Service Name                   |
     |------------|------------|--------------------------------|
     | Event Type | Compute    | `Instance - Action Begin`      |
 
-6. 트리거되면 실행한 액션을 앞서 배포한 function으로 지정합니다.
+6. 트리거되면 실행할 액션을 앞서 생성한 topic으로 지정합니다.
 
-    | Action Type   | Notifications Compartment | Topic                    |
-    |---------------|---------------------------|--------------------------|
-    | Notifications | [compartment-name]        | demo-notification-topic  |
+    | Action Type   | Notifications Compartment | Topic                     |
+    |---------------|---------------------------|---------------------------|
+    | Notifications | [compartment-name]        | `demo-notification-topic` |
 
 ## 실행
 
