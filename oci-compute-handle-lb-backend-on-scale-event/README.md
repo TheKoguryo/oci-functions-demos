@@ -104,9 +104,9 @@ Backend Heath Check 정보도 기본 값과 다른 경우 변경합니다.
 
 5. 이벤트가 트리거되는 조건(Rule Conditions)으로 autoscale 되어, Instance Pool의 업데이트가 시작하는 이벤트로 지정합니다
 
-    | Condition  | Event Type | Service Name                   |
-    |------------|------------|--------------------------------|
-    | Event Type | Compute    | `Instance Pool - Update Begin` |
+    | Condition  | Service Name | Event Type                     |
+    |------------|--------------|--------------------------------|
+    | Event Type | Compute      | `Instance Pool - Update Begin` |
 
 6. 트리거되면 실행한 액션을 앞서 배포한 function으로 지정합니다.
 
