@@ -35,6 +35,8 @@ OCI Object Storage Bucket에 오브젝트가 업로드 되었을 때, 해당 이
 
     5. Terminal에서 python 실행후 다음 복사해서 실행 - [Data Science Pipeline - Quick Start](https://accelerated-data-science.readthedocs.io/en/stable/user_guide/pipeline/quick_start.html)를 참고하여 수정한 샘플 코드
 
+        - 참고 - [OCI 활성 Service Conda 환경 목록](https://github.com/oracle-samples/oci-data-science-ai-samples/blob/main/conda-environments/service-conda-environments.md)
+
         ```
         from ads.pipeline import Pipeline, PipelineStep, CustomScriptStep, ScriptRuntime, NotebookRuntime
         import os
