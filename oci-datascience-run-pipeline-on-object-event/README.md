@@ -208,7 +208,7 @@ Cloud shell을 사용하는 경우 왼쪽 Actions > Architecture를 클릭하여
 
 3. Details 탭으로 이동하여, 실행 로그 링크를 클릭합니다. 이동한 OCI Logging 페이지에서 파이프파인 실행로그 중 스크립트에서 출력한 오브젝트 이름을 확인합니다.
 
-    ![Pipelien Run Log](pipeline_run_log.png)
+    ![Pipelien Run Log](images/pipeline_run_log.png)
 
 ## 추가 변경
 
