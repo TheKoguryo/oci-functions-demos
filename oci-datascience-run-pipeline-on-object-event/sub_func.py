@@ -35,9 +35,9 @@ def main():
 
     data_science_client = oci.data_science.DataScienceClient(config)
 
-    compartment_id = 'ocid1.compartment.oc1..aaaaaaaa54ryitndueosfezrxvxvcuosutofi2d6f53rbgwz2dpqrgeci7lq'
-    project_id = 'ocid1.datascienceproject.oc1.ap-tokyo-1.amaaaaaavsea7yiaaytrg6ry2tk6vhsmdzdblxcizvrchorjtt4piikepmwa'
-    pipeline_id = 'ocid1.datasciencepipeline.oc1.ap-tokyo-1.amaaaaaavsea7yiaubv34oeenjfxd7pclprkyffii2yotvakwrha55fvyj5a'
+    compartment_id = 'ocid1.compartment.oc1...'
+    project_id = 'ocid1.datascienceproject...'
+    pipeline_id = 'ocid1.datasciencepipeline.oc1...'
     resource_name = 'hello-odsc.txt'
 
     datasciencepipelinerun_id = run_pipeline(data_science_client, compartment_id, project_id, pipeline_id, resource_name)

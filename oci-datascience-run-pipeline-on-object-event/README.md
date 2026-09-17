@@ -1,23 +1,21 @@
 # oci-datascience-run-pipeline-on-object-event
 
-OCI Object Storage Bucket에 오브젝트가 업로드 되었을 때, 발생하는 이벤트에 OCI Data Science 파이프라인을 실행하는 것을 OCI Function으로 처리한 예시입니다. 단순히 실행하는 것까지만 확인하는 예제입니다.
+OCI Object Storage Bucket에 오브젝트가 업로드 되었을 때, 해당 이벤트로 OCI Data Science 파이프라인을 실행하는 것을 OCI Functions으로 처리한 예시입니다. 단순히 실행하는 것까지만 확인하는 예제입니다.
 
 ## 사전 구성할 것
 
 - OCI Object Storage Bucket 생성
 
-    - Name: 예, pipeline-input-bucket
+    - Name: 예, `pipeline-input-bucket`
     - Emit object events: Event 생성을 위해 활성화
 
 - OCI Data Science 파이프라인 생성
 
-    1. Notebook Session 생성
+    1. Notebook Session 생성후 오픈
 
-    2. Notebook Session 오픈
+    2. Notebook Session에서 Terminal 실행
 
-    3. Notebook Session에서 Terminal 실행
-
-    4. 파이프라인에서 실행할 스크립트 생성
+    3. 파이프라인에서 실행할 스크립트(script.py) 파일 생성 - 실행이 되고, 파라미터를 넘겨받을 수 있는지만 체크하기 위한 스크립트
 
         ```
         # script.py
@@ -29,7 +27,13 @@ OCI Object Storage Bucket에 오브젝트가 업로드 되었을 때, 발생하�
         print(f"object_name: {object_name}")
         ```
 
-    5. Terminal에서 python 실행후 다음 복사해서 실행 - [Data Science Pipeline - Quick Start](https://accelerated-data-science.readthedocs.io/en/stable/user_guide/pipeline/quick_start.html)를 사용
+    4. Terminal에서 OCI SDK 실행을 위한 [OCI Config](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm) 설정후 동작하는 지 확인
+
+        ```
+        oci os ns get
+        ```
+
+    5. Terminal에서 python 실행후 다음 복사해서 실행 - [Data Science Pipeline - Quick Start](https://accelerated-data-science.readthedocs.io/en/stable/user_guide/pipeline/quick_start.html)를 참고하여 수정한 샘플 코드
 
         ```
         from ads.pipeline import Pipeline, PipelineStep, CustomScriptStep, ScriptRuntime, NotebookRuntime
@@ -70,6 +74,8 @@ OCI Object Storage Bucket에 오브젝트가 업로드 되었을 때, 발생하�
 
         pipeline.create()
 
+        pipeline.compartment_id
+        pipeline.project_id
         pipeline.id
         ```
 
@@ -77,7 +83,7 @@ OCI Object Storage Bucket에 오브젝트가 업로드 되었을 때, 발생하�
 
         - compartment_id, project_id, pipeline.id
 
-    7. OCI 콘솔에 로그인합니다. 생성된 파이프라인으로 이동합니다.
+    7. OCI 콘솔에 로그인합니다. 생성된 파이프라인으로 이동합니다. 이름 예, Test Pipeline by Function
 
     8. 서비스 로그 활성화 - Logs탭에서 Pipeline Run Logs 로그를 활성화합니다.
 
@@ -91,20 +97,19 @@ OCI Object Storage Bucket에 오브젝트가 업로드 되었을 때, 발생하�
 
 2. [OCI Functions - Application](https://cloud.oracle.com/functions/apps) 화면으로 이동합니다.
 
-3. application을 생성합니다.
+3. application을 생성합니다. 예제는 X86기준입니다.
 
-    - Name: 'oci-hol-fn-app`
+    - Name: `oci-hol-fn-app`
     - VCN, Subnet 지정
     - Shape: `GENERIC_X86`
 
-4. 생성한 application으로 이동합니다.
-
-5. Monitoring 탭에서 Function Invocation Logs를 활성화합니다.
+4. 생성한 application의 Monitoring 탭에서 Function Invocation Logs를 활성화합니다.
 
 ### fn cli 설정
 
-application의 상세페이지 Getting started에 있는 Cloud shell setup 또는 Local setup을 따라. fn cli를 설정합니다.
+application의 상세페이지(Details) 탭의 Getting started에 있는 Cloud shell setup 또는 Local setup을 따라 fn cli를 설정합니다.
 
+Cloud shell을 사용하는 경우 왼쪽 Actions > Architecture를 클릭하여, `X86_64`로 변경합니다. 변경후 `echo $CPU_ARCHITECTURE`로 확인합니다.
 
 ## OCI Function 배포
 
@@ -117,7 +122,6 @@ application의 상세페이지 Getting started에 있는 Cloud shell setup 또�
     ```
 
 2. `func.yaml`의 config에서 `ODSC_COMPARTMENT_ID`, `ODSC_PROJECT_ID`, `ODSC_PIPELINE_ID`를 호출할 사용할 OCI Data Science 파이프라인의 정보로 업데이트 합니다.
-Backend Heath Check 정보도 기본 값과 다른 경우 변경합니다.
 
     ```
     schema_version: 20180708
@@ -174,7 +178,7 @@ Backend Heath Check 정보도 기본 값과 다른 경우 변경합니다.
 
     - Description: for-oci-functions
 
-    - Rule: [compartment-name]을 Instance Pool 및 Function이 있는 Compartment로 지정합니다.
+    - Rule: [compartment-name]을 Pipeline 및 Function이 있는 Compartment로 지정합니다.
 
         ```
         Allow any-user to read objects in compartment [compartment-name] where all {request.principal.type='fnfunc', target.bucket.name='pipeline-input-bucket'}
@@ -182,6 +186,10 @@ Backend Heath Check 정보도 기본 값과 다른 경우 변경합니다.
         Allow any-user to read data-science-pipelines in compartment [compartment-name] where all {request.principal.type='fnfunc'}
         Allow any-user to manage data-science-pipeline-runs in compartment [compartment-name] where all {request.principal.type='fnfunc'}
         Allow any-user to read log-groups in compartment [compartment-name] where all {request.principal.type='fnfunc'}
+        Allow any-user to manage log-groups in compartment [compartment-name] where all {request.principal.type='fnfunc'}
+        Allow any-user to use object-family in compartment [compartment-name] where ALL { request.principal.type = 'datasciencepipelinerun' }
+        Allow any-user to use virtual-network-family in compartment [compartment-name] where ALL { request.principal.type = 'datasciencepipelinerun' }
+        Allow any-user to use log-content in compartment [compartment-name] where ALL { request.principal.type = 'datasciencepipelinerun' }        
         ```
 
 ## 실행
@@ -190,16 +198,19 @@ Backend Heath Check 정보도 기본 값과 다른 경우 변경합니다.
 
 ### 결과 확인
 
-Application의 Monitoring 탭에서 지정한 OCI Logging으로 이동합니다. 기본 검색 또는 고급 검색을 통해 실행 로그를 확인합니다. 약간의 지연이 있을 수 있습니다.
+1. 파이프 라인 실행 목록에서 function이 호출한 것을 확인합니다.
 
-![OCI Logging](images/search-logs-in-oci-logging.png)
+    ![Run Pipeline By Function](images/run_pipeline_by_function.png)
+
+2. 해당 실행건을 클릭합니다. Pipeline run override 탭에서 Function에 호출시 넘이 오브젝트 이름이 환경변수로 넘어간 걸 확인합니다.
+
+    ![Pipeline Run Override](images/pipeline_run_override.png)
+
+3. Details 탭으로 이동하여, 실행 로그 링크를 클릭합니다. 이동한 OCI Logging 페이지에서 파이프파인 실행로그 중 스크립트에서 출력한 오브젝트 이름을 확인합니다.
+
+    ![Pipelien Run Log](pipeline_run_log.png)
 
 ## 추가 변경
-
-### 컨테이너 이미지 위치 변경
-
-Function 배포시 생성되는 컨테이너 이미지는 OCI Registry에 푸쉬됩니다. 해당 이름의 Repository가 없는 경우, Root compartment에 이미지가 푸쉬됩니다.
-필요한 경우 확인하여 compartment를 이동합니다.
 
 ### config 설정값 변경
 
